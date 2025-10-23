@@ -13,7 +13,7 @@ from a2a.types import (
     AgentSkill,
     TransportProtocol,
 )
-from agent_executor import DiceAgentExecutor  # type: ignore[import-untyped]
+from .agent_executor import DiceAgentExecutor  # type: ignore[import-untyped]
 from dotenv import load_dotenv
 
 
