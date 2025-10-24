@@ -86,11 +86,11 @@ class DiceAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
     def __init__(self) -> None:
-        self._agent = create_agent()
+        self.root_agent = create_agent()
         self._user_id = 'remote_agent'
         self._runner = Runner(
-            app_name=self._agent.name,
-            agent=self._agent,
+            app_name=self.root_agent.name,
+            agent=self.root_agent,
             artifact_service=InMemoryArtifactService(),
             session_service=InMemorySessionService(),
             memory_service=InMemoryMemoryService(),
@@ -100,7 +100,7 @@ class DiceAgent:
         self, query, session_id
     ) -> AsyncIterable[tuple[bool, str]]:
         session = await self._runner.session_service.get_session(
-            app_name=self._agent.name,
+            app_name=self.root_agent.name,
             user_id=self._user_id,
             session_id=session_id,
         )
@@ -109,7 +109,7 @@ class DiceAgent:
         )
         if session is None:
             session = await self._runner.session_service.create_session(
-                app_name=self._agent.name,
+                app_name=self.root_agent.name,
                 user_id=self._user_id,
                 state={},
                 session_id=session_id,
