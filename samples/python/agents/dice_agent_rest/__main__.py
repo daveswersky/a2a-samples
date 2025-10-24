@@ -3,6 +3,7 @@ import os
 
 import click
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
 
 from a2a.server.apps import A2ARESTFastAPIApplication
 from a2a.server.request_handlers import DefaultRequestHandler
@@ -74,7 +75,16 @@ def main(host: str, port: int) -> None:
         agent_card=agent_card, http_handler=request_handler
     )
 
-    uvicorn.run(server.build(), host=host, port=port)
+    app = server.build()
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    uvicorn.run(app, host=host, port=port)
 
 
 if __name__ == '__main__':
