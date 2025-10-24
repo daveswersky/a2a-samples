@@ -10,8 +10,8 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 
-def roll_dice(N: int = 6) -> int:
-    """Rolls an N sided dice. If number of sides aren't given, uses 6.
+def roll_dice(N: int) -> int:
+    """Rolls an N sided dice.
 
     Args:
       N: the number of the side of the dice to roll.
@@ -19,6 +19,8 @@ def roll_dice(N: int = 6) -> int:
     Returns:
       A number between 1 and N, inclusive
     """
+    if N is None:
+        N = 6
     return random.randint(1, N)
 
 
@@ -80,17 +82,20 @@ You should not rely on the previous history on prime results.
     )
 
 
+root_agent = create_agent()
+
+
 class DiceAgent:
     """An agent that handles reimbursement requests."""
 
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
     def __init__(self) -> None:
-        self.root_agent = create_agent()
+        self._agent = root_agent
         self._user_id = 'remote_agent'
         self._runner = Runner(
-            app_name=self.root_agent.name,
-            agent=self.root_agent,
+            app_name=self._agent.name,
+            agent=self._agent,
             artifact_service=InMemoryArtifactService(),
             session_service=InMemorySessionService(),
             memory_service=InMemoryMemoryService(),
@@ -100,7 +105,7 @@ class DiceAgent:
         self, query, session_id
     ) -> AsyncIterable[tuple[bool, str]]:
         session = await self._runner.session_service.get_session(
-            app_name=self.root_agent.name,
+            app_name=self._agent.name,
             user_id=self._user_id,
             session_id=session_id,
         )
@@ -109,7 +114,7 @@ class DiceAgent:
         )
         if session is None:
             session = await self._runner.session_service.create_session(
-                app_name=self.root_agent.name,
+                app_name=self._agent.name,
                 user_id=self._user_id,
                 state={},
                 session_id=session_id,
