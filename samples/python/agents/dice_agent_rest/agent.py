@@ -53,7 +53,6 @@ def check_prime(nums: list[int]) -> str:
 def create_agent() -> LlmAgent:
     return LlmAgent(
         model='gemini-2.0-flash-001',
-        name='dice_roll_agent',
         instruction="""
 You roll dice and answer questions about the outcome of the dice rolls.
 You can roll dice of different sizes.
